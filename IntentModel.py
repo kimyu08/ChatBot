@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras import preprocessing
-
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # 의도 분류 모델 모듈
 class IntentModel:

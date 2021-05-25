@@ -1,5 +1,8 @@
-from hangul_utils import split_syllable_char, split_syllables, join_jamos
+from hangul_utils import split_syllables, join_jamos
+import re
 
+menu_list = ['싸이버거','딥치즈버거','통새우버거','화이트갈릭버거','인크레더블버거', '에그불고기버거']
+split_menu_list = [split_syllables(menu) for menu in menu_list]
 def calc_distance(a, b):
     ''' 레벤슈타인 거리 계산하기 '''
     if a == b: return 0 # 같으면 0을 반환
@@ -28,41 +31,32 @@ def calc_distance(a, b):
                 matrix[i-1][j-1] + cost # 문자 변경
             ])
     return matrix[a_len][b_len]
-    
-def read_file(filename):
-    with open(filename, mode = 'r', encoding = 'UTF-8') as f:
-        data = []
-        for line in f:
-            data.append(line.rstrip('/n'))
-        return data
 
-def Edit_distance(Word, Menu):
-    count = 0
-    distance_list = []
-    total_distance_list = []
-    Word_split = split_syllables(Word)
-    for num2 in range(0, len(Menu)):
-         Menu_split = split_syllables(Menu[num2])
-         distance = calc_distance(Word_split, Menu_split)
-         distance_list.append(distance)
-    for num2 in range(0, len(Menu)):
-         Menu_split = split_syllables(Menu[num2])
-         distance = calc_distance(Word_split, Menu_split)
-         if distance == min(distance_list):
-             Word = Menu[num2]
-    distance_list = []
-    return Word
+def typo_correction(text):
+    split_word = []
+    distance = []
+    correction_text = ""
+    if "." in text:
+        r_text = text.replace(".", " ")
+        text = re.sub('[^0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]', '', r_text)
+        split_text = text.split()
+    else:
+        text = re.sub('[^0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]', '', text)
+        split_text = text.split()
 
-def split_space(Word):
-    Word1 = Word.split(' ')
-    Word = Word1[0]
-    return Word
-
-def change_string(Word,Edit):
-    chWord = Word.split(' ')
-    chWord[0] = Edit
-    chString = " ".join(chWord)
-    return chString
-
-
-
+    for word in split_text:
+        split_word.append(split_syllables(word))
+    for word in range(0,len(split_text)):
+        for menu in range(0,len(split_menu_list)):
+            dis_value = calc_distance(split_word[word], split_menu_list[menu])
+            distance.append(dis_value)
+        for menu in range(0,len(split_menu_list)):
+            dis_value = calc_distance(split_word[word], split_menu_list[menu])
+            if min(distance) == dis_value and dis_value <= 4:
+                split_word[word] = split_menu_list[menu]
+        distance = []
+    for word in split_word:
+        join = join_jamos(word)
+        correction_text += join
+        correction_text += " "
+    return correction_text

@@ -6,6 +6,9 @@ from tensorflow.keras.models import Model, load_model
 from tensorflow.keras import preprocessing
 from LevenshteinDistance1 import *
 from service import *
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 menulist = ["싸이버거","딥치즈버거","통새우버거","화이트갈릭버거","인크레더블버거"]
 
@@ -19,12 +22,12 @@ menu = []
 menuNum = []
 query = input("안녕하세요 맘스터입니다~ 무엇을 도와드릴까요?? : ")
 # 오타변환.
-Equery = Edit_distance(query,menulist)
-predict = intent.predict_class(query)
+Equery = typo_correction(query)
+predict = intent.predict_class(Equery)
 predict_label = intent.labels[predict]
-pos = p.pos(query)
+pos = p.pos(Equery)
 for i in pos:
-    if i[1] == "NNP":
+    if i[0] in menulist:
         menu.append(i[0])
     if i[1] == "SN":
         menuNum.append(i[0])

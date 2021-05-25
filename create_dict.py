@@ -4,6 +4,7 @@
 from Preprocess import Preprocess
 from tensorflow.keras import preprocessing
 import pickle
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # 말뭉치 데이터 읽어오기
 def read_corpus_data(filename):
