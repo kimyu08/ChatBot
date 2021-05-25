@@ -56,3 +56,4 @@ class Preprocess:
                 w2i.append(self.word_index['OOV'])
         return w2i
 
+
